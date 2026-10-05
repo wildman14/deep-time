@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deep Time</title>
+<meta name="description" content="An evolution game. Start as a single cell and guide your lineage through 11 stages to the space age.">
+<meta name="theme-color" content="#06161a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deep Time">
+<meta property="og:description" content="Start as a single cell. Carry your lineage to the stars.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Deep Time</div>
+    <div class="species" id="species"></div>
+  </header>
+  <div class="strata-wrap">
+    <ol class="strata" id="strata" aria-label="Evolutionary stages"></ol>
+    <div class="strata-ends"><span>Single cell</span><span>Space age</span></div>
+  </div>
+  <main class="main">
+    <section class="plate" aria-label="Specimen plate">
+      <div class="scene" id="scene">
+        <canvas id="cv" role="img" aria-label="Animated scene of your species at its current stage. Tap to gather."></canvas>
+        <div class="hud-top">
+          <div>
+            <div class="stage-no" id="stageNo"></div>
+            <div class="era-name" id="eraName"></div>
+            <div class="era-when" id="eraWhen"></div>
+          </div>
+          <div class="buff" id="buff" hidden></div>
+        </div>
+        <div class="hud-bot" id="fig"></div>
+      </div>
+      <button class="tap" id="tap" type="button"><span id="tapLabel"></span><small id="tapGain"></small></button>
+      <div class="stats">
+        <div class="stat"><div class="k" id="stockK">nutrients</div><div class="v" id="stock">0</div></div>
+        <div class="stat"><div class="k">Per second</div><div class="v" id="pps">0</div></div>
+        <div class="stat"><div class="k">Lineage age</div><div class="v" id="age">0:00</div></div>
+        <div class="stat"><div class="k">Insight</div><div class="v" id="ins">0</div><div class="sub" id="insR"></div></div>
+        <div class="stat"><div class="k">Cohesion</div><div class="v" id="coh">0</div><div class="sub" id="cohR"></div></div>
+        <div class="stat"><div class="k">Approach</div><div class="v vs" id="appr">None</div><div class="sub">set each stage</div></div>
+      </div>
+      <div class="evolve direction">
+        <div class="evolve-head"><span class="k">Focus</span><span class="pct">change any time</span></div>
+        <div class="seg wide" id="focus" role="group" aria-label="Focus">
+          <button type="button" data-f="balanced" aria-pressed="true">Balanced</button>
+          <button type="button" data-f="grow" aria-pressed="false">Grow</button>
+          <button type="button" data-f="learn" aria-pressed="false">Learn</button>
+          <button type="button" data-f="society" aria-pressed="false">Society</button>
+        </div>
+        <p class="hint" id="focusDesc"></p>
+        <p class="hint" id="apprDesc"></p>
+      </div>
+      <div class="evolve">
+        <div class="evolve-head"><span class="k">Evolution pressure</span><span class="pct" id="pct">0%</span></div>
+        <div class="meter"><i id="meter"></i></div>
+        <button class="evolve-btn" id="evolveBtn" type="button"><span id="evoLabel"></span><small id="evoCost"></small></button>
+      </div>
+    </section>
+    <section class="notes" aria-label="Notes">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tab-traits" aria-selected="true" aria-controls="p-traits" type="button">Traits</button>
+        <button class="tab" role="tab" id="tab-adapt" aria-selected="false" aria-controls="p-adapt" type="button">Adapt</button>
+        <button class="tab" role="tab" id="tab-tech" aria-selected="false" aria-controls="p-tech" type="button">Tech</button>
+        <button class="tab" role="tab" id="tab-civic" aria-selected="false" aria-controls="p-civic" type="button">Civics</button>
+        <button class="tab" role="tab" id="tab-log" aria-selected="false" aria-controls="p-log" type="button">Chronicle</button>
+      </div>
+      <div class="tabpanel" id="p-traits" role="tabpanel" aria-labelledby="tab-traits">
+        <div class="tools"><span class="k">Add traits</span>
+          <div class="seg" id="amt" role="group" aria-label="Purchase amount">
+            <button type="button" data-m="1" aria-pressed="true">×1</button>
+            <button type="button" data-m="10" aria-pressed="false">×10</button>
+            <button type="button" data-m="max" aria-pressed="false">Max</button>
+          </div>
+        </div>
+        <div id="traitList"></div>
+      </div>
+      <div class="tabpanel" id="p-adapt" role="tabpanel" aria-labelledby="tab-adapt" hidden>
+        <div class="tools"><span class="k">One-time upgrades</span><span class="k" id="adaptCount"></span></div>
+        <div id="adaptList"></div>
+      </div>
+      <div class="tabpanel" id="p-tech" role="tabpanel" aria-labelledby="tab-tech" hidden>
+        <div class="tools"><span class="k">Innovations</span><span class="k" id="techBal"></span></div>
+        <div class="branches" id="techBranches"></div>
+        <div class="tree" id="techTree"></div>
+      </div>
+      <div class="tabpanel" id="p-civic" role="tabpanel" aria-labelledby="tab-civic" hidden>
+        <div class="tools"><span class="k">Society</span><span class="k" id="civBal"></span></div>
+        <div class="branches" id="civBranches"></div>
+        <div class="tree" id="civTree"></div>
+      </div>
+      <div class="tabpanel" id="p-log" role="tabpanel" aria-labelledby="tab-log" hidden>
+        <div id="charBox"></div>
+        <ul class="log" id="logList"></ul>
+      </div>
+    </section>
+  </main>
+  <footer><span>Progress saves in this browser.</span><button id="resetBtn" type="button">Start over</button></footer>
+</div>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mtitle"><div class="card" id="card"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:24px;font-family:system-ui,sans-serif">Deep Time needs JavaScript to run.</p></noscript>
+<script src="js/engine.js"></script>
+<script src="js/art.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

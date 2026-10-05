@@ -1,0 +1,13 @@
+{
+  "name": "deep-time",
+  "version": "1.0.0",
+  "description": "An evolution game. Start as a single cell and guide your lineage through 11 stages to the space age.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "node tests/check.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
